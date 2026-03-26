@@ -40,44 +40,45 @@ This is the backend for an automated grading system that evaluates Python progra
 
 1. **Clone the repository**
 git clone https://github.com/1Joshie7/ai-assisted-marking.git
-cd ai-assisted-marking
 
-text
+cd ai-assisted-marking
 
 2. **Create and activate a virtual environment**
 python -m venv venv
 source venv/bin/activate # On Windows: venv\Scripts\activate
 
-text
-
 3. **Install dependencies**
+   
 pip install -r requirements.txt
 
-text
 
-4. **Set up environment variables**  
+5. **Set up environment variables**  
 Create a `.env` file in the project root (next to `manage.py`) and add:
-GEMINI_API_KEY=your-google-gemini-api-key
+GEMINI_API_KEY="your-google-gemini-api-key"
 
-text
+
 (If you omit this, AI feedback will be skipped – the system still works.)
 
 5. **Run migrations**
 python manage.py migrate
 
-text
+
+
 
 6. **Create a superuser** (for admin access)
 python manage.py createsuperuser
 
-text
+
+
 
 7. **Start the development server**
 python manage.py runserver
 
-text
+
+
 
 The API will be available at `http://127.0.0.1:8000/api/`.  
+
 The admin panel is at `http://127.0.0.1:8000/admin/`.
 
 --------------------------------------------------------------------
@@ -91,24 +92,32 @@ Full API documentation (endpoints, authentication, request/response examples) is
 ## Project Structure
 grading_system/
 ├── accounts/ # User authentication and profiles
+
 ├── assignments/ # Courses, assignments, test cases
+
 ├── submissions/ # Submission model and grading engine
+
 ├── plagiarism/ # Plagiarism detection module
+
 ├── grading_system/ # Project settings and URLs
+
 ├── media/ # Uploaded files (ignored by git)
+
 ├── requirements.txt # Python dependencies
+
 └── manage.py
 
-text
+
 
 --------------------------------------------------------------------
 
 ## Testing
 
 To run tests (if added):
+
 python manage.py test
 
-text
+
 
 --------------------------------------------------------------------
 
@@ -140,5 +149,7 @@ This project is for educational purposes only. All rights reserved.
 ## Acknowledgements
 
 - Google Gemini API for AI feedback
+  
 - Django and DRF community for the excellent tools
+  
 - All team members for their contributions
