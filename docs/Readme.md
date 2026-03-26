@@ -66,3 +66,49 @@ bash
 python manage.py runserver
 The API will be available at http://127.0.0.1:8000/api/.
 The admin panel is at http://127.0.0.1:8000/admin/.
+API Documentation
+Full API documentation (endpoints, authentication, request/response examples) is available in the Frontend API Documentation.docx file in this repository. It covers all endpoints, file upload instructions, token refresh, and error codes.
+
+Project Structure
+text
+grading_system/
+├── accounts/          # User authentication and profiles
+├── assignments/       # Courses, assignments, test cases
+├── submissions/       # Submission model and grading engine
+├── plagiarism/        # Plagiarism detection module
+├── grading_system/    # Project settings and URLs
+├── media/             # Uploaded files (ignored by git)
+├── requirements.txt   # Python dependencies
+└── manage.py
+Testing
+To run tests (if added):
+
+bash
+python manage.py test
+Deployment
+For production, you should:
+
+Switch to a production database (e.g., PostgreSQL)
+
+Set DEBUG=False and configure allowed hosts
+
+Serve static/media files properly (e.g., with WhiteNoise or a CDN)
+
+Use a production WSGI server (e.g., Gunicorn) with Nginx
+
+Set environment variables (secret key, Gemini API key, etc.) in a secure way
+
+A sample deployment guide can be provided upon request.
+
+Contributing
+This project was developed for a university course. If you want to contribute, please coordinate with the team lead.
+
+License
+This project is for educational purposes only. All rights reserved.
+
+Acknowledgements
+Google Gemini API for AI feedback
+
+Django and DRF community for the excellent tools
+
+All team members for their contributions
