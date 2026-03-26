@@ -2,6 +2,8 @@
 
 This is the backend for an automated grading system that evaluates Python programming assignments, provides partial credit, AI‑generated feedback, and plagiarism detection. Built with Django and Django REST Framework.
 
+---
+
 ## Features
 
 - **User Authentication** – JWT with role‑based access (student / lecturer)
@@ -13,6 +15,8 @@ This is the backend for an automated grading system that evaluates Python progra
 - **Admin Panel** – Manage all data via Django admin
 - **Comprehensive API** – Fully documented endpoints for frontend consumption
 
+---
+
 ## Tech Stack
 
 - **Python 3.13**
@@ -23,6 +27,8 @@ This is the backend for an automated grading system that evaluates Python progra
 - **Pylint** – code style checking
 - **Google Gemini API** – AI feedback
 - **Other dependencies** – see `requirements.txt`
+
+---
 
 ## Getting Started
 
@@ -66,6 +72,7 @@ bash
 python manage.py runserver
 The API will be available at http://127.0.0.1:8000/api/.
 The admin panel is at http://127.0.0.1:8000/admin/.
+
 API Documentation
 Full API documentation (endpoints, authentication, request/response examples) is available in the Frontend API Documentation.docx file in this repository. It covers all endpoints, file upload instructions, token refresh, and error codes.
 
