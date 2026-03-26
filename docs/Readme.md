@@ -2,31 +2,48 @@
 
 This is the backend for an automated grading system that evaluates Python programming assignments, provides partial credit, AI‑generated feedback, and plagiarism detection. Built with Django and Django REST Framework.
 
+
 --------------------------------------------------------------------
 
 ## Features
 
 - **User Authentication** – JWT with role‑based access (student / lecturer)
+  
 - **Course & Assignment Management** – Create courses, assignments, and flexible grading rubrics
+  
 - **Test Cases** – Support for both `stdout` (run script, compare output) and `function` (import code, call function) test modes
+  
 - **Code Submission & Grading** – Upload Python files, run against test cases with partial credit, static analysis (AST), pylint style scoring, and configurable weights
+  
 - **AI Feedback** – Uses Google Gemini API to provide short, encouraging suggestions
+  
 - **Plagiarism Detection** – Compare submissions using similarity algorithms, view reports, mark reviewed
+  
 - **Admin Panel** – Manage all data via Django admin
+  
 - **Comprehensive API** – Fully documented endpoints for frontend consumption
+  
 
 --------------------------------------------------------------------
 
 ## Tech Stack
 
 - **Python 3.13**
+  
 - **Django 6.0.3**
+  
 - **Django REST Framework**
+  
 - **SQLite** (development) / PostgreSQL (production)
+  
 - **JWT** – `djangorestframework-simplejwt`
+  
 - **Pylint** – code style checking
+  
 - **Google Gemini API** – AI feedback
+  
 - **Other dependencies** – see `requirements.txt`
+
 
 --------------------------------------------------------------------
 
@@ -34,50 +51,61 @@ This is the backend for an automated grading system that evaluates Python progra
 
 ### Prerequisites
 - Python 3.13 or higher
+  
 - Git
 
 ### Installation
 
 1. **Clone the repository**
+   
 git clone https://github.com/1Joshie7/ai-assisted-marking.git
 
-cd ai-assisted-marking
+**cd** ai-assisted-marking
 
 2. **Create and activate a virtual environment**
 python -m venv venv
+
 source venv/bin/activate # On Windows: venv\Scripts\activate
 
-3. **Install dependencies**
+
+
+4. **Install dependencies**
    
 pip install -r requirements.txt
 
 
-5. **Set up environment variables**  
+5. **Set up environment variables**
+   
 Create a `.env` file in the project root (next to `manage.py`) and add:
+
 GEMINI_API_KEY="your-google-gemini-api-key"
 
 
-(If you omit this, AI feedback will be skipped – the system still works.)
+**(If you omit this, AI feedback will be skipped – the system still works.)**
 
 5. **Run migrations**
+   
 python manage.py migrate
 
 
 
 
-6. **Create a superuser** (for admin access)
+7. **Create a superuser** (for admin access)
+   
 python manage.py createsuperuser
 
 
 
 
-7. **Start the development server**
+9. **Start the development server**
+    
 python manage.py runserver
 
 
 
 
 The API will be available at `http://127.0.0.1:8000/api/`.  
+
 
 The admin panel is at `http://127.0.0.1:8000/admin/`.
 
@@ -90,22 +118,24 @@ Full API documentation (endpoints, authentication, request/response examples) is
 --------------------------------------------------------------------
 
 ## Project Structure
+
 grading_system/
-├── accounts/ # User authentication and profiles
 
-├── assignments/ # Courses, assignments, test cases
+**├── accounts/**         # User authentication and profiles
 
-├── submissions/ # Submission model and grading engine
+**├── assignments/**      # Courses, assignments, test cases
 
-├── plagiarism/ # Plagiarism detection module
+**├── submissions/**      # Submission model and grading engine
 
-├── grading_system/ # Project settings and URLs
+**├── plagiarism/**       # Plagiarism detection module
 
-├── media/ # Uploaded files (ignored by git)
+**├── grading_system/**   # Project settings and URLs
 
-├── requirements.txt # Python dependencies
+**├── media/**            # Uploaded files (ignored by git)
 
-└── manage.py
+**├── requirements.txt**  # Python dependencies
+
+**└── manage.py**
 
 
 
@@ -114,6 +144,7 @@ grading_system/
 ## Testing
 
 To run tests (if added):
+
 
 python manage.py test
 
@@ -124,11 +155,17 @@ python manage.py test
 ## Deployment
 
 For production, you should:
+
 - Switch to a production database (e.g., PostgreSQL)
+  
 - Set `DEBUG=False` and configure allowed hosts
+  
 - Serve static/media files properly (e.g., with WhiteNoise or a CDN)
+  
 - Use a production WSGI server (e.g., Gunicorn) with Nginx
+  
 - Set environment variables (secret key, Gemini API key, etc.) in a secure way
+- 
 
 A sample deployment guide can be provided upon request.
 
