@@ -7,12 +7,12 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'role', 'password')
+        fields = ('id', 'username', 'email', 'role',)
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         password = validated_data.pop('password')
-        user = User.objects.create_user(**validated_data)
+        user = User(**validated_data)
         user.set_password(password)
         user.save()
         return user
@@ -24,3 +24,14 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['username'] = user.username
         token['role'] = user.role
         return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        data['user'] = {
+            'id': self.user.id,
+            'username': self.user.username,
+            'role': self.user.role
+        }
+
+        return data
