@@ -100,7 +100,9 @@ export default function StudentDashboard() {
           <button className="auth-button logout-button" onClick={logout}>Logout</button>
         </div>
 
-        <p className="welcome-text">Welcome, {user?.username}!</p>
+        <h1 className="welcome-text">
+           Welcome, <span>Crystal!</span>
+        </h1>
 
         {/* Submit Code Section */}
         <div className="section">
