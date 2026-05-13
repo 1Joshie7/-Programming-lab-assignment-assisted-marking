@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { api } from "../api"
 import { clearAuthSession, getStoredUser } from "../auth"
+import logo from "../assets/logo.png"
 
 export default function StudentDashboard() {
   const navigate = useNavigate()
@@ -96,13 +97,29 @@ export default function StudentDashboard() {
     <main className="dash-container">
       <section className="auth-card dashboard-card">
         <div className="dashboard-header">
-          <h2>Student Dashboard</h2>
-          <button className="auth-button logout-button" onClick={logout}>Logout</button>
-        </div>
 
-        <h1 className="welcome-text">
-           Welcome, <span>Crystal!</span>
-        </h1>
+  <div className="header-left">
+    <img src={logo} alt="Logo" className="dashboard-logo" />
+
+    <h2>Student Dashboard</h2>
+  </div>
+
+  <div className="header-right">
+
+    <p className="welcome-text">
+      Welcome, <span>{user?.username}</span>
+    </p>
+
+    <button
+      className="auth-button logout-button"
+      onClick={logout}
+    >
+      Logout
+    </button>
+
+  </div>
+
+</div>
 
         {/* Submit Code Section */}
         <div className="section">

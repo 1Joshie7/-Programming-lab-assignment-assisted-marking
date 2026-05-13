@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { api } from "../api"
 import { setAuthSession } from "../auth"
 import "../styles/auth.css"
+import logo from "../assets/logo.png"
 
 export default function Login() {
   const navigate = useNavigate()
@@ -27,6 +28,9 @@ export default function Login() {
   return (
     <div className="auth-container">
       <div className="auth-card">
+        <div className="logo-wrapper">
+  <img src={logo} alt="Logo" className="auth-logo" />
+</div>
         <h2>Welcome Back</h2>
         <form onSubmit={handleLogin}>
           <input className="auth-input" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
@@ -37,5 +41,7 @@ export default function Login() {
         <p className="auth-link">No account? <Link to="/register">Create one</Link></p>
       </div>
     </div>
+
+    
   )
 }

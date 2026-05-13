@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { api } from "../api"
 import { clearAuthSession, getStoredUser } from "../auth"
+import logo from "../assets/logo.png"
 
 export default function LecturerDashboard() {
   const navigate = useNavigate()
@@ -189,11 +190,26 @@ export default function LecturerDashboard() {
     <main className="dash-container">
       <section className="auth-card dashboard-card">
         <div className="dashboard-header">
-          <h2>Lecturer Dashboard</h2>
-          <button className="auth-button logout-button" onClick={logout}>Logout</button>
-        </div>
 
-        <p className="welcome-text">Welcome, {user?.username}!</p>
+  <div className="header-left">
+    <img src={logo} alt="Logo" className="dashboard-logo" />
+    <h2>Lecturer Dashboard</h2>
+  </div>
+
+  <div className="header-right">
+    <p className="welcome-text">
+      Welcome, {user?.username}!
+    </p>
+
+    <button
+      className="auth-button logout-button"
+      onClick={logout}
+    >
+      Logout
+    </button>
+  </div>
+
+</div>
 
         {error && <p className="auth-error">{error}</p>}
 

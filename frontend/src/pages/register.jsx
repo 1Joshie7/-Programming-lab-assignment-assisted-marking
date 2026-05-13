@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { api } from "../api"
 import "../styles/auth.css"
+import logo from "../assets/logo.png"
 
 export default function Register() {
   const navigate = useNavigate()
@@ -29,6 +30,9 @@ export default function Register() {
   return (
     <div className="auth-container">
       <div className="auth-card">
+        <div className="logo-wrapper">
+          <img src={logo} alt="Logo" className="auth-logo" />
+        </div>
         <h2>Create Account</h2>
         <form onSubmit={handleRegister}>
           <input className="auth-input" type="text" placeholder="Username" required value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />
