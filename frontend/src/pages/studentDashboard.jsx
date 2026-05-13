@@ -84,7 +84,7 @@ export default function StudentDashboard() {
 
   if (loading) {
     return (
-      <main className="auth-container">
+      <main className="dash-container">
         <section className="auth-card dashboard-card">
           <p className="loading-text">Loading dashboard...</p>
         </section>
@@ -93,7 +93,7 @@ export default function StudentDashboard() {
   }
 
   return (
-    <main className="auth-container">
+    <main className="dash-container">
       <section className="auth-card dashboard-card">
         <div className="dashboard-header">
           <h2>Student Dashboard</h2>
