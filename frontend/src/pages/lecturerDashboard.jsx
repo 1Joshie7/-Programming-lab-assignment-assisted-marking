@@ -198,7 +198,7 @@ export default function LecturerDashboard() {
 
   <div className="header-right">
     <p className="welcome-text">
-      Welcome, {user?.username}!
+      Welcome, <span> {user?.username}! </span>
     </p>
 
     <button
