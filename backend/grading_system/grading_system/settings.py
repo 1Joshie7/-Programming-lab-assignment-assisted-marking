@@ -1,5 +1,6 @@
 
-
+from dotenv import load_dotenv
+load_dotenv()
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -18,8 +19,6 @@ DEBUG = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
 ]
 
 ALLOWED_HOSTS = []
@@ -44,6 +43,7 @@ INSTALLED_APPS = [
     'assignments',
     'accounts',
     'submissions',
+    'plagiarism',
 ]
 
 MIDDLEWARE = [

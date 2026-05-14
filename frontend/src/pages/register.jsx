@@ -1,52 +1,402 @@
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { api } from "../api"
-import "../styles/auth.css"
-import logo from "../assets/logo.png"
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { 
+  Mail, 
+  Lock, 
+  User, 
+  School, 
+  Building2, 
+  ChevronRight, 
+  ChevronLeft,
+  GraduationCap,
+  CheckCircle2,
+  Code2
+} from 'lucide-react';
+import { register } from '../services/auth';
 
 export default function Register() {
-  const navigate = useNavigate()
-  const [form, setForm] = useState({ username: "", email: "", password: "", role: "student" })
-  const [error, setError] = useState("")
+  const [activeStep, setActiveStep] = useState(0);
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    first_name: '',
+    last_name: '',
+    role: 'student',
+    reg_number: '',
+    faculty: '',
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleRegister = async (event) => {
-    event.preventDefault()
-    setError("")
+  const steps = ['Account Type', 'Personal Info', 'Credentials'];
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    if (error) setError('');
+  };
+
+  const handleNext = () => {
+    if (activeStep === 0) {
+      setActiveStep(1);
+    } else if (activeStep === 1) {
+      if (!formData.first_name.trim()) {
+        setError('First name is required');
+        return;
+      }
+      if (!formData.last_name.trim()) {
+        setError('Last name is required');
+        return;
+      }
+      if (formData.role === 'student' && !formData.reg_number.trim()) {
+        setError('Registration number is required');
+        return;
+      }
+      if (formData.role === 'lecturer' && !formData.faculty.trim()) {
+        setError('Faculty is required');
+        return;
+      }
+      setActiveStep(2);
+    }
+  };
+
+  const handleBack = () => {
+    setActiveStep(prev => prev - 1);
+    setError('');
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      setLoading(false);
+      return;
+    }
+
+    const payload = {
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+      first_name: formData.first_name,
+      last_name: formData.last_name,
+      role: formData.role,
+    };
+
+    if (formData.role === 'student') {
+      payload.reg_number = formData.reg_number;
+    } else {
+      payload.faculty = formData.faculty;
+    }
 
     try {
-      await api.post("/api/auth/register/", form)
-      navigate("/")
+      await register(payload);
+      toast.success('Account created! Please log in.');
+      navigate('/login', { state: { message: 'Registration successful! Please log in.' } });
     } catch (err) {
-      const details = err.response?.data
-      if (details && typeof details === "object") {
-        const first = Object.values(details)[0]
-        setError(Array.isArray(first) ? first[0] : "Registration failed")
-      } else {
-        setError("Registration failed")
-      }
+      setError(err.response?.data?.detail || 'Registration failed');
+      toast.error('Registration failed');
+    } finally {
+      setLoading(false);
     }
-  }
+  };
+
+  const getStepContent = () => {
+    switch (activeStep) {
+      case 0:
+        return (
+          <div className="mt-6 space-y-4">
+            <p className="text-sm text-white font-medium">Select your account type to continue</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button
+                type="button"
+                onClick={() => handleChange({ target: { name: 'role', value: 'student' } })}
+                className={`p-6 rounded-xl border-2 transition-all ${
+                  formData.role === 'student'
+                    ? 'border-indigo-600 bg-indigo-50 shadow-md'
+                    : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'
+                }`}
+              >
+                <School className={`w-10 h-10 mx-auto mb-2 ${formData.role === 'student' ? 'text-indigo-600' : 'text-gray-400'}`} />
+                <h3 className="font-bold text-lg">Student</h3>
+                <p className="text-xs text-white mt-1">Submit assignments and track progress</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleChange({ target: { name: 'role', value: 'lecturer' } })}
+                className={`p-6 rounded-xl border-2 transition-all ${
+                  formData.role === 'lecturer'
+                    ? 'border-purple-600 bg-purple-50 shadow-md'
+                    : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50'
+                }`}
+              >
+                <Building2 className={`w-10 h-10 mx-auto mb-2 ${formData.role === 'lecturer' ? 'text-purple-600' : 'text-gray-400'}`} />
+                <h3 className="font-bold text-lg">Lecturer</h3>
+                <p className="text-xs text-white mt-1">Create assignments and grade submissions</p>
+              </button>
+            </div>
+          </div>
+        );
+      case 1:
+        return (
+          <div className="mt-4 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">First Name</label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="first_name"
+                    value={formData.first_name}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="John"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">Last Name</label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="last_name"
+                    value={formData.last_name}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Doe"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {formData.role === 'student' && (
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">Registration Number</label>
+                <div className="relative">
+                  <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="reg_number"
+                    value={formData.reg_number}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="e.g., R2420375"
+                    required
+                  />
+                </div>
+              </div>
+            )}
+
+            {formData.role === 'lecturer' && (
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">Faculty</label>
+                <div className="relative">
+                  <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="faculty"
+                    value={formData.faculty}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="e.g., Computing"
+                    required
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      case 2:
+        return (
+          <div className="mt-4 space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="johndoe"
+                  required
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="john@example.com"
+                  required
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+              <div className="relative">
+                <CheckCircle2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <div className="logo-wrapper">
-          <img src={logo} alt="Logo" className="auth-logo" />
+     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-black flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="w-full max-w-2xl">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 text-white">
+            <Code2 className="w-8 h-8" />
+            <h1 className="text-3xl font-bold tracking-tight">AI Programming Grader</h1>
+          </div>
+          <p className="text-white/80 mt-2 text-sm">Automated Python assignment grading & feedback</p>
+        </div> 
+
+        <div className="absolute w-72 h-72 bg-purple-500 rounded-full blur-3xl opacity-30 top-10 left-10"></div>
+        <div className="absolute w-72 h-72 bg-indigo-500 rounded-full blur-3xl opacity-30 bottom-10 right-10"></div>
+
+        <div className="relative z-10 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl p-6 md:p-8">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-white">Create your account</h2>
+            <p className="text-white/70 mt-1">Join our platform to start using automated grading</p>
+          </div>
+
+          <div className="flex justify-between mb-8">
+            {steps.map((label, idx) => (
+              <div key={label} className="flex-1 flex items-center">
+                <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold transition-colors ${
+                  idx < activeStep ? 'bg-green-500 text-white' : 
+                  idx === activeStep ? 'bg-indigo-600 text-white' : 
+                  'bg-gray-200 text-gray-600'
+                }`}>
+                  {idx < activeStep ? <CheckCircle2 className="w-5 h-5" /> : idx + 1}
+                </div>
+                {idx < steps.length - 1 && (
+                  <div className={`flex-1 h-0.5 mx-2 ${idx < activeStep ? 'bg-green-500' : 'bg-gray-200'}`} />
+                )}
+              </div>
+            ))}
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
+            {getStepContent()}
+
+            <div className="flex justify-between mt-8">
+              <button
+                type="button"
+                onClick={handleBack}
+                disabled={activeStep === 0}
+                className={`px-5 py-2 rounded-lg font-medium transition-colors ${
+                  activeStep === 0
+                    ? 'invisible'
+                    : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <ChevronLeft className="inline w-4 h-4 mr-1" /> Back
+              </button>
+
+              {activeStep === steps.length - 1 ? (
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition disabled:opacity-50 flex items-center gap-2"
+                >
+                  {loading ? 'Creating Account...' : 'Create Account'}
+                  {!loading && <ChevronRight className="w-4 h-4" />}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition flex items-center gap-2"
+                >
+                  Next <ChevronRight className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+              
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className=" text-white">Already have an account?</span>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-2 px-4 py-2 border border-white/20 rounded-lg text-white hover:bg-white/10 transition"
+              >
+                Sign in to existing account
+              </Link>
+            </div>
+          </form>
         </div>
-        <h2>Create Account</h2>
-        <form onSubmit={handleRegister}>
-          <input className="auth-input" type="text" placeholder="Username" required value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />
-          <input className="auth-input" type="email" placeholder="Email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-          <input className="auth-input" type="password" placeholder="Password" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
-          <select className="auth-select" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
-            <option value="student">Student</option>
-            <option value="lecturer">Lecturer</option>
-          </select>
-          {error && <p className="auth-error">{error}</p>}
-          <button className="auth-button" type="submit">Register</button>
-        </form>
-        <p className="auth-link">Already have an account? <Link to="/">Login</Link></p>
+
+        <div className="text-center text-white/60 text-xs mt-6">
+          © 2026 AI Programming Grader. All rights reserved.
+        </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,47 +1,163 @@
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { api } from "../api"
-import { setAuthSession } from "../auth"
-import "../styles/auth.css"
-import logo from "../assets/logo.png"
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { 
+  User, 
+  Lock, 
+  Eye, 
+  EyeOff, 
+  LogIn,
+  Code2,
+  GraduationCap
+} from 'lucide-react';
+import { login } from '../services/auth';
+import { setTokens } from '../utils/token';
+import { getUserRole } from '../utils/role';
 
 export default function Login() {
-  const navigate = useNavigate()
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    setError("")
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
     try {
-      const { data } = await api.post("/api/auth/login/", { username, password })
-      setAuthSession(data)
-      navigate(data.user.role === "lecturer" ? "/lecturer" : "/student")
+      const { data } = await login({ username, password });
+      setTokens(data.access, data.refresh);
+      toast.success('Login successful! Redirecting...');
+      const role = getUserRole();
+      navigate(role === 'lecturer' ? '/lecturer' : '/student');
     } catch (err) {
-      const detail = err.response?.data?.detail
-      setError(detail || "Invalid username or password")
+      setError(err.response?.data?.detail || 'Login failed');
+      toast.error('Login failed');
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <div className="logo-wrapper">
-  <img src={logo} alt="Logo" className="auth-logo" />
-</div>
-        <h2>Welcome Back</h2>
-        <form onSubmit={handleLogin}>
-          <input className="auth-input" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
-          <input className="auth-input" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          {error && <p className="auth-error">{error}</p>}
-          <button className="auth-button" type="submit">Login</button>
-        </form>
-        <p className="auth-link">No account? <Link to="/register">Create one</Link></p>
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-black">
+      {/* Simple background – no SVG pattern that causes parsing errors */}
+      <div className="relative z-10 w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 text-white">
+            <Code2 className="w-8 h-8" />
+            <h1 className="text-3xl font-bold tracking-tight">AI Programming Grader</h1>
+          </div>
+          <p className="text-white/80 mt-2 text-sm">Intelligent assessment platform for modern education</p>
+        </div>
+      
+       <div className="absolute w-72 h-72 bg-purple-500 rounded-full blur-3xl opacity-30 top-10 left-10"></div>
+       <div className="absolute w-72 h-72 bg-indigo-500 rounded-full blur-3xl opacity-30 bottom-10 right-10"></div>
+
+        {/* Login Card */}
+        <div className="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl p-6 md:p-8">
+          <div className="mb-6">
+            <h2 className="text-white text-2xl font-bold">Welcome Back</h2>
+            <p className="text-white/70">
+              <GraduationCap className="w-4 h-4" />
+              Sign in to access your dashboard
+            </p>
+          </div>
+
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Username field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full pl-10 pr-3 py-2 bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg backdrop-blur-md focus:ring-2 focus:ring-indigo-400 outline-none"
+                  placeholder="johndoe"
+                  required
+                  autoFocus
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            {/* Password field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-3 py-2 bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg backdrop-blur-md focus:ring-2 focus:ring-indigo-400 outline-none"
+                  placeholder="••••••••"
+                  required
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-black-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Submit button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                'Signing in...'
+              ) : (
+                <>
+                  <LogIn className="w-5 h-5" />
+                  Sign In
+                </>
+              )}
+            </button>
+
+            {/* Divider */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/20"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="text-white/100">New to AI Programming Grader?</span>
+              </div>
+            </div>
+
+            {/* Register link */}
+            <div className="text-center">
+              <Link
+                to="/register"
+                className="inline-flex items-center gap-2 px-4 py-2 border border-white/20 rounded-lg text-white/70 hover:bg-white/10 transition"
+              >
+                Create an account
+              </Link>
+            </div>
+          </form>
+        </div>
+
+        <div className="text-center text-white/60 text-xs mt-6">
+          © 2026 AI Programming Grader. All rights reserved.
+        </div>
       </div>
     </div>
-
-    
-  )
+  );
 }
