@@ -11,6 +11,7 @@ class Submission(models.Model):
     feedback = models.TextField(blank=True, default='')
     
     plagiarism_score = models.FloatField(default=0.0)
+    plagiarism_feedback = models.TextField(null=True, blank=True)
     
     def __str__(self):
         return f"{self.student.username} - {self.assignment.title}"

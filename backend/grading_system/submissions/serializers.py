@@ -17,7 +17,6 @@ class SubmissionSerializer(serializers.ModelSerializer):
     'code_file',
     'submitted_at',
     'grade',
-    'plagiarism_feedback',
     'plagiarism_score'
    ]
         read_only_fields = ['student', 'submitted_at', 'grade', 'feedback']

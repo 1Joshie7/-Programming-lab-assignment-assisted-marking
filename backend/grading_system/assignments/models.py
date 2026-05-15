@@ -14,7 +14,12 @@ class Course(models.Model):
 class Assignment(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='assignments')
+    course = models.ForeignKey(
+    Course,
+    on_delete=models.CASCADE,
+    null=True,
+    blank=True
+)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='assignments')
     created_at = models.DateTimeField(auto_now_add=True)
     deadline = models.DateTimeField()
@@ -38,6 +43,7 @@ class TestCase(models.Model):
     # Function mode fields
     function_name = models.CharField(max_length=100, blank=True, help_text="Name of function to call")
     arguments = models.JSONField(default=list, blank=True, help_text="List of arguments to pass")
-
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
+    
     def __str__(self):
         return f"Test case for {self.assignment.title}"
